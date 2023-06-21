@@ -1,0 +1,3 @@
+# A_text_game
+A text based adventure game with fighting, looting and adventuring mechanics.
+In progress...
