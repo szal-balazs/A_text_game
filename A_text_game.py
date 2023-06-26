@@ -36,6 +36,8 @@ class Player(Character):
     def __init__(self, name, hp, power):
         super().__init__(name, hp, power)
         self.max_hp = 20
+        self.luck = 0
+        self.max_luck = 8
 
     @classmethod
     def attack(cls):
@@ -410,28 +412,76 @@ def fight():
 
 
 def looting():
-    lootable_names = ("chest", "pouch")
-    loot_question = f"You found a {random.choice(lootable_names)}.\n" \
-                    f"Do you want to search it ? {format_ans_lists(GameVar.ans_list)}"
-    loot_ans = answer_check(GameVar.ans_list, loot_question)
-
-    def loot_table():
-        # loot common item
-        if 10 <= loot_roll < 41:
+    def loot_common():
+        common_roll = random.randint(0, 100)
+        if common_roll < 70:
             health_potion.get_item()
             loot_dict["Health potion"] += 1
-        elif 41 <= loot_roll < 79:
+        else:
             bomb.generate_bomb()
             bomb.get_item()
             loot_dict[bomb.name] += 1
-        # loot rare item
-        elif 80 <= loot_roll > 99:
-            sword.get_item()
-            loot_dict["Sword"] += 1
-            # loot legendary item
-        elif 99 < loot_roll:
-            golden_apple.get_item()
-            loot_dict["Golden apple"] += 1
+
+    def loot_rare():
+        sword.get_item()
+        loot_dict["Sword"] += 1
+
+    def loot_legendary():
+        golden_apple.get_item()
+        loot_dict["Golden apple"] += 1
+
+    def dynamic_percentage(percentage_list):
+
+        formula_x = - 0.5 + (player.luck / 10)
+        formula_b = 1 - (player.luck / 10)
+
+        distance_in_x = [0]
+        z = 0
+        for num in percentage_list:
+            a = 2 * num / 100 + z
+            distance_in_x.append(round(a, 3))
+            z = a
+
+        heights = []
+        for num in range(len(distance_in_x)):
+            y = formula_x * distance_in_x[num] + formula_b
+            heights.append(y)
+
+        areas = []
+        for num in range(len(heights) - 2):
+            area = (heights[num] + heights[num + 1]) / 2 * (distance_in_x[num] - distance_in_x[num + 1])
+            areas.append(area)
+
+        summ = round(sum(areas), 3)
+        dyn_perc = []
+        temp = 0
+        for num in range(len(areas)):
+            perc = areas[num] / summ * 100
+            perc2 = round(perc, 3)
+            temp += perc2
+            dyn_perc.append(temp)
+
+        return dyn_perc
+
+    def loot_table_cra():
+        percentage = [20, 50, 20, 10]
+        din_pr = dynamic_percentage(percentage)
+
+        if din_pr[0] <= loot_roll < din_pr[1]:
+            loot_common()
+        elif din_pr[1] <= loot_roll < din_pr[2]:
+            loot_rare()
+        elif loot_roll >= din_pr[2]:
+            loot_legendary()
+
+    def loot_table_cr():
+        percentage = [20, 55, 25]
+        din_pr = dynamic_percentage(percentage)
+
+        if din_pr[0] <= loot_roll < din_pr[1]:
+            loot_common()
+        elif din_pr[1] <= loot_roll:
+            loot_rare()
 
     loot_dict = {
         "Health potion": 0,
@@ -454,15 +504,20 @@ def looting():
         else:
             print("There was nothing in there.")
 
+    lootable_names = ("chest", "pouch")
+    loot_question = f"You found a {random.choice(lootable_names)}.\n" \
+                    f"Do you want to search it ? {format_ans_lists(GameVar.ans_list)}"
+    loot_ans = answer_check(GameVar.ans_list, loot_question)
+
     if loot_ans == "yes":
         loot_roll = 0
         if enemy.mob_class == "mob":
-            loot_roll = random.randint(0, 79)
-            loot_table()
+            loot_roll = random.uniform(0, 100)
+            loot_table_cr()
         if enemy.mob_class == "boss":
             for x in range(2):
-                loot_roll = random.randint(0, 100)
-                loot_table()
+                loot_roll = random.uniform(0, 100)
+                loot_table_cra()
         loot_sum()
 
 
@@ -475,6 +530,7 @@ def skill_find():
             move_list.append("skills")
         player.skill_list.append("Fury")
         print("You learned a new skill.")
+
 
 # Other game elements ------------------------------------
 def restart():
@@ -563,7 +619,8 @@ while GameVar.run_ans == "yes":
             break
         mob_round()
     if not p_dead():
-        skill_find()
+        if GameVar.diff_lvl == 1:
+            skill_find()
         boss_round()
 
     if not p_dead():
