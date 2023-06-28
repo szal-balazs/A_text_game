@@ -10,24 +10,24 @@ class Character:
 
 # Formats -----------------------------------------------------------
 def format_ans_lists(ans):
-    y = ', '.join(ans)
-    x = f"\033[92m {y}\033[0m"
-    return x
+    return f"\033[92m{', '.join(ans)}\033[0m"
 
 
 def format_stats(ans):
-    x = f"\033[36m{ans}\033[0m"
-    return x
+    return f"\033[36m{ans}\033[0m"
+
+
+
+def format_stats_name(ans):
+    return f"\033[34m{ans}\033[0m"
 
 
 def format_enemy_name(ans):
-    x = f"\033[31m{ans}\033[0m"
-    return x
+    return f"\033[31m{ans}\033[0m"
 
 
 def format_items(ans):
-    x = f"\033[92m{ans}\033[0m"
-    return x
+    return f"\033[92m{ans}\033[0m"
 
 
 # Player setup ----------------------------------------------------
@@ -97,12 +97,9 @@ class Player(Character):
             "Power": player.power
         }
 
-        key_format = "\033[34m"
-        value_format = "\033[36m"
-        key_format_end = "\033[0m"
         print(f"\nYour stats are:")
         for key in stat.keys():
-            print(key_format, key, ":", value_format, stat[key], key_format_end)
+            print(f"{format_stats_name(key)} : {format_stats(stat[key])}")
 
 
 move_list = ["attack", "run"]
@@ -157,11 +154,8 @@ class Enemy(Character):
             "Type": enemy.type
         }
 
-        key_format = "\033[34m"
-        value_format = "\033[36m"
-        key_format_end = "\033[0m"
         for key in e_stat.keys():
-            print(key_format, key, ":", value_format, e_stat[key], key_format_end)
+            print(f"{format_stats_name(key)} : {format_stats(e_stat[key])}")
 
     spec_att_timer = 0
 
@@ -237,9 +231,7 @@ class Item:
         else:
             GameVar.inventory_dict[health_potion.name] -= 1
             heal = 5
-            max_heal = player.hp + heal
-            if max_heal > player.max_hp:
-                heal = player.max_hp - player.hp
+            heal = min(heal, player.max_hp - player.hp)
             player.hp += heal
             print(f"You healed {heal} hp. Your hp is {format_stats(player.hp)}.\n")
 
@@ -253,17 +245,17 @@ class Item:
                 player.power += 2
                 GameVar.equipped.append("Sword")
                 print(f"You equipped the sword. Your power is {format_stats(player.power)} now.\n")
-        if "sword" in GameVar.equipped:
+        else:
             print(f"You already have a {format_items(sword.name)} equipped.\n")
 
     @classmethod
     def use_golden_apple(cls):
         if GameVar.inventory_dict[golden_apple.name] <= 0:
-            print(f"You have no {format_items(health_potion.name)}")
+            print(f"You have no {format_items(golden_apple.name)}")
         else:
             GameVar.inventory_dict[golden_apple.name] -= 1
             player.max_hp += 4
-            print(f"You maximum hp increased with 4. Your maximum hp is {format_stats(player.max_hp)}.\n")
+            print(f"You maximum hp increased with 4. It is now {format_stats(player.max_hp)}.\n")
 
 
 class Bomb(Item):
@@ -280,21 +272,17 @@ class Bomb(Item):
         GameVar.inventory_dict[bomb.name] -= 1
 
         def is_weak():
-            if enemy.type == "Unholy" and bomb.name == "Holy grenade":
-                return True
-            elif enemy.type == "Undead" and bomb.name == "Life bomb":
-                return True
-            elif enemy.type == "Creature" and bomb.name == "Fire bomb":
-                return True
-            else:
-                return False
 
-        if is_weak():
-            enemy.hp -= 6
-            print("You dealt 6 damage.")
-        else:
-            enemy.hp -= 3
-            print("You dealt 3 damage.")
+            conditions = {
+                "Holy grenade": "Unholy",
+                "Life bomb": "Undead",
+                "Fire bomb": "Creature"
+            }
+            return enemy.type == conditions.get(bomb.name, False)
+
+        enemy.hp -= 6 if is_weak() else 3
+        print(f"You dealt {6 if is_weak() else 3} damage.")
+
         if not e_dead():
             print(f"{format_enemy_name(enemy.name)} has {format_stats(enemy.hp)} hp left.\n")
         else:
@@ -306,10 +294,10 @@ def inventory_print():
     key_format_end = "\033[0m"
     print(f"Your inventory:")
 
-    if sum(GameVar.inventory_dict.values()) > 0:
-        for key in GameVar.inventory_dict:
-            if GameVar.inventory_dict[key] > 0:
-                print(key_format, key, key_format_end, ":", GameVar.inventory_dict[key])
+    if any(GameVar.inventory_dict.values()):
+        for key, value in GameVar.inventory_dict.items():
+            if value > 0:
+                print(f"{key_format}{key}{key_format_end} : {value}")
     else:
         print("Empty")
 
@@ -327,7 +315,7 @@ def fight():
     print(f"You have been attacked by {format_enemy_name(enemy.name)}.")
     enemy.stat()
     skip_list = ["run"]
-    fight_question = f"What do you want to do ?{format_ans_lists(move_list)}"
+    fight_question = f"\nWhat do you want to do ? {format_ans_lists(move_list)}"
     move_ans = answer_check(move_list, fight_question)
 
     def turn_end():
@@ -354,16 +342,14 @@ def fight():
                 move_ans = "exit"
             else:
                 move_ans = answer_check(move_list, fight_question)
+
         if "items" in move_list:
             if move_ans == "items":
                 inventory_print()
                 item_use_ans = input(f"\nWhat item do you want to use (or go\033[92m back\033[0m)?\n")
-                while item_use_ans not in GameVar.inventory_dict.keys():
-                    if item_use_ans == "back":
-                        break
-                    else:
-                        inventory_print()
-                        item_use_ans = input(f"Try again or go\033[92m back\033[0m\n")
+                while item_use_ans not in GameVar.inventory_dict.keys() and item_use_ans != "back":
+                    inventory_print()
+                    item_use_ans = input(f"Try again or go\033[92m back\033[0m\n")
 
                 if item_use_ans == "Health potion":
                     health_potion.use_h_potion()
@@ -380,16 +366,14 @@ def fight():
                     move_ans = "exit"
                 else:
                     move_ans = answer_check(move_list, fight_question)
+
         if "skills" in move_list:
             if move_ans == "skills":
                 skill_use_ans = input(f"\nWhat skill do you want to use (or go\033[92m back\033[0m)?"
                                       f"{format_ans_lists(player.skill_list)}:\n")
-                while skill_use_ans not in player.skill_list:
-                    if skill_use_ans == "back":
-                        break
-                    else:
-                        skill_use_ans = input(f"Try again or go\033[92m back\033[0m."
-                                              f"{format_ans_lists(player.skill_list)}\n")
+                while skill_use_ans not in player.skill_list and skill_use_ans != "back":
+                    skill_use_ans = input(f"Try again or go\033[92m back\033[0m."
+                                          f"{format_ans_lists(player.skill_list)}\n")
                 if skill_use_ans == "Fury":
                     player.skill_fury()
 
@@ -436,34 +420,23 @@ def looting():
         formula_b = 1 - (player.luck / 10)
 
         distance_in_x = [0]
-        z = 0
-        for num in percentage_list:
-            a = 2 * num / 100 + z
-            distance_in_x.append(round(a, 3))
-            z = a
-
-        heights = []
-        for num in range(len(distance_in_x)):
-            y = formula_x * distance_in_x[num] + formula_b
-            heights.append(y)
-
-        areas = []
-        for num in range(len(heights) - 2):
-            area = (heights[num] + heights[num + 1]) / 2 * (distance_in_x[num] - distance_in_x[num + 1])
-            areas.append(area)
-
-        summ = round(sum(areas), 3)
-        dyn_perc = []
         temp = 0
-        for num in range(len(areas)):
-            perc = areas[num] / summ * 100
-            perc2 = round(perc, 3)
-            temp += perc2
-            dyn_perc.append(temp)
+        for num in percentage_list:
+            temp = round(2 * num / 100 + temp, 3)
+            distance_in_x.append(temp)
+
+        heights = [round(formula_x * distance_in_x[num] + formula_b, 3) for num in range(len(distance_in_x))]
+
+        areas = [round((heights[num] + heights[num + 1]) / 2 * distance_in_x[num + 1], 3)
+                 for num in range(len(heights) - 1)]
+
+        dyn_perc = [round(sum(areas[:num]) / sum(areas) * 100, 2) for num in range(1, len(areas))]
 
         return dyn_perc
 
     def loot_table_cra():
+        loot_roll = random.uniform(0, 100)
+
         percentage = [20, 50, 20, 10]
         din_pr = dynamic_percentage(percentage)
 
@@ -475,6 +448,8 @@ def looting():
             loot_legendary()
 
     def loot_table_cr():
+        loot_roll = random.uniform(0, 100)
+
         percentage = [20, 55, 25]
         din_pr = dynamic_percentage(percentage)
 
@@ -493,14 +468,12 @@ def looting():
     }
 
     def loot_sum():
-        key_format = "\033[92m"
-        key_format_end = "\033[0m"
 
         if sum(loot_dict.values()) > 0:
             print(f"You found:")
-            for key in loot_dict:
-                if loot_dict[key] > 0:
-                    print(loot_dict[key], key_format, key, key_format_end)
+            for key, value in loot_dict.items():
+                if value > 0:
+                    print(f"{value} {format_items(key)}")
         else:
             print("There was nothing in there.")
 
@@ -510,13 +483,10 @@ def looting():
     loot_ans = answer_check(GameVar.ans_list, loot_question)
 
     if loot_ans == "yes":
-        loot_roll = 0
         if enemy.mob_class == "mob":
-            loot_roll = random.uniform(0, 100)
             loot_table_cr()
-        if enemy.mob_class == "boss":
+        elif enemy.mob_class == "boss":
             for x in range(2):
-                loot_roll = random.uniform(0, 100)
                 loot_table_cra()
         loot_sum()
 
