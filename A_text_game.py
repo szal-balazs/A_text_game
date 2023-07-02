@@ -17,7 +17,6 @@ def format_stats(ans):
     return f"\033[36m{ans}\033[0m"
 
 
-
 def format_stats_name(ans):
     return f"\033[34m{ans}\033[0m"
 
@@ -30,6 +29,10 @@ def format_items(ans):
     return f"\033[92m{ans}\033[0m"
 
 
+def f_back():
+    return f"\033[92m back\033[0m"
+
+
 # Player setup ----------------------------------------------------
 class Player(Character):
 
@@ -38,21 +41,18 @@ class Player(Character):
         self.max_hp = 20
         self.luck = 0
         self.max_luck = 8
+        self.bonus_dmg = 0
+        self.damage = self.power + self.bonus_dmg
 
     @classmethod
     def attack(cls):
-        enemy.hp = int(enemy.hp) - int(player.damage())
+        enemy.hp = enemy.hp - player.damage
         print(f"\nYou attacked.")
-        print(f"You dealt {player.damage()} damage.")
+        print(f"You dealt {player.damage} damage.")
         if not e_dead():
             print(f"{format_enemy_name(enemy.name)} has {format_stats(enemy.hp)} hp left.\n")
         else:
             print(f"{format_enemy_name(enemy.name)} has no hp left.\n")
-
-    @classmethod
-    def damage(cls):
-        dmg = int(player.power)
-        return dmg
 
     skill_list = []
     skill_used = "no"
@@ -63,10 +63,10 @@ class Player(Character):
     def skill_fury(cls):
         if player.fury_cd == 0:
             enemy_hp_before = [enemy.hp]
-            enemy.hp = int(enemy.hp) - int(player.damage()) - int(player.damage())
+            enemy.hp = enemy.hp - player.damage - player.damage
             player.skill_used = "yes"
             enemy_hp_after = [enemy.hp]
-            fury_dmg = int(enemy_hp_before[0]) - int(enemy_hp_after[0])
+            fury_dmg = enemy_hp_before[0] - enemy_hp_after[0]
             print(f"\nYou used Fury.")
             print(f"You dealt {fury_dmg} damage.")
             if not e_dead():
@@ -94,7 +94,8 @@ class Player(Character):
         stat = {
             "Name": player.name,
             "HP": player.hp,
-            "Power": player.power
+            "Power": player.power,
+            "Damage": player.damage
         }
 
         print(f"\nYour stats are:")
@@ -112,6 +113,8 @@ class Enemy(Character):
         super().__init__(name, hp, power)
         self.mob_class = ""
         self.type = ""
+
+    spec_att_timer = 0
 
     @classmethod
     def generate_enemy(cls):
@@ -157,8 +160,6 @@ class Enemy(Character):
         for key in e_stat.keys():
             print(f"{format_stats_name(key)} : {format_stats(e_stat[key])}")
 
-    spec_att_timer = 0
-
     @classmethod
     def attack(cls):
         print(f"{format_enemy_name(enemy.name)} is attacked you.")
@@ -193,8 +194,8 @@ class Enemy(Character):
             bonus_dmg = 2
         else:
             bonus_dmg = 0
-        dmg = int(enemy.power) + bonus_dmg
-        return dmg
+
+        return int(enemy.power) + bonus_dmg
 
     @classmethod
     def werewolf_special(cls):
@@ -225,7 +226,7 @@ class Item:
             GameVar.inventory_dict[self.name] += 1
 
     @classmethod
-    def use_h_potion(cls):
+    def use_health_potion(cls):
         if GameVar.inventory_dict[health_potion.name] <= 0:
             print(f"You have no {format_items(health_potion.name)}")
         else:
@@ -233,7 +234,7 @@ class Item:
             heal = 5
             heal = min(heal, player.max_hp - player.hp)
             player.hp += heal
-            print(f"You healed {heal} hp. Your hp is {format_stats(player.hp)}.\n")
+            print(f"You healed {heal} hp. Your hp is {format_stats(player.hp)} now.\n")
 
     @classmethod
     def use_sword(cls):
@@ -242,9 +243,9 @@ class Item:
                 print(f"You have no {format_items(sword.name)}")
             else:
                 GameVar.inventory_dict[sword.name] -= 1
-                player.power += 2
+                player.bonus_dmg += 2
                 GameVar.equipped.append("Sword")
-                print(f"You equipped the sword. Your power is {format_stats(player.power)} now.\n")
+                print(f"You equipped the sword. You have {format_stats(player.damage)} damage now.\n")
         else:
             print(f"You already have a {format_items(sword.name)} equipped.\n")
 
@@ -290,14 +291,12 @@ class Bomb(Item):
 
 
 def inventory_print():
-    key_format = "\033[92m"
-    key_format_end = "\033[0m"
-    print(f"Your inventory:")
+    print("Your inventory:")
 
     if any(GameVar.inventory_dict.values()):
         for key, value in GameVar.inventory_dict.items():
             if value > 0:
-                print(f"{key_format}{key}{key_format_end} : {value}")
+                print(f"{format_items(key)} : {value}")
     else:
         print("Empty")
 
@@ -305,9 +304,8 @@ def inventory_print():
 # Game components -------------------------------------------------------
 
 def answer_check(answer_list, question):
-    answer = input(f"{question}:\n")
-    while answer not in answer_list:
-        answer = input(f"I don't understand !\n{question}:\n")
+    while (answer := input(f"{question}:\n")) not in answer_list:
+        print(f"I don't understand !\n")
     return answer
 
 
@@ -315,7 +313,7 @@ def fight():
     print(f"You have been attacked by {format_enemy_name(enemy.name)}.")
     enemy.stat()
     skip_list = ["run"]
-    fight_question = f"\nWhat do you want to do ? {format_ans_lists(move_list)}"
+    fight_question = f"What do you want to do ? {format_ans_lists(move_list)}"
     move_ans = answer_check(move_list, fight_question)
 
     def turn_end():
@@ -346,20 +344,23 @@ def fight():
         if "items" in move_list:
             if move_ans == "items":
                 inventory_print()
-                item_use_ans = input(f"\nWhat item do you want to use (or go\033[92m back\033[0m)?\n")
+                item_use_ans = input(f"\nWhat item do you want to use (or go{f_back()})\n")
                 while item_use_ans not in GameVar.inventory_dict.keys() and item_use_ans != "back":
                     inventory_print()
-                    item_use_ans = input(f"Try again or go\033[92m back\033[0m\n")
+                    item_use_ans = input(f"Try again or go{f_back()})\n")
 
-                if item_use_ans == "Health potion":
-                    health_potion.use_h_potion()
-                elif item_use_ans == "Sword":
-                    sword.use_sword()
-                elif item_use_ans == "Golden apple":
-                    golden_apple.use_golden_apple()
-                elif item_use_ans in ("Holy grenade", "Life bomb", "Fire bomb"):
+                item_use_functions = {
+                    "Health potion": health_potion.use_health_potion,
+                    "Sword": sword.use_sword,
+                    "Golden apple": golden_apple.use_golden_apple,
+                    "Holy grenade": bomb.use_bomb,
+                    "Life bomb": bomb.use_bomb,
+                    "Fire bomb": bomb.use_bomb
+                }
+
+                if item_use_ans in item_use_functions:
                     bomb.name = item_use_ans
-                    bomb.use_bomb()
+                    item_use_functions[item_use_ans]()
 
                 if fight_death_check():
                     skip_list.append("exit")
@@ -369,10 +370,10 @@ def fight():
 
         if "skills" in move_list:
             if move_ans == "skills":
-                skill_use_ans = input(f"\nWhat skill do you want to use (or go\033[92m back\033[0m)?"
+                skill_use_ans = input(f"\nWhat skill do you want to use (or go{f_back()})? "
                                       f"{format_ans_lists(player.skill_list)}:\n")
                 while skill_use_ans not in player.skill_list and skill_use_ans != "back":
-                    skill_use_ans = input(f"Try again or go\033[92m back\033[0m."
+                    skill_use_ans = input(f"Try again or go{f_back()}."
                                           f"{format_ans_lists(player.skill_list)}\n")
                 if skill_use_ans == "Fury":
                     player.skill_fury()
@@ -565,17 +566,11 @@ class GameVar:
 
 
 def p_dead():
-    if player.hp > 0:
-        return False
-    if player.hp <= 0:
-        return True
+    return player.hp <= 0
 
 
 def e_dead():
-    if enemy.hp > 0:
-        return False
-    if enemy.hp <= 0:
-        return True
+    return enemy.hp <= 0
 
 
 while GameVar.run_ans == "yes":
