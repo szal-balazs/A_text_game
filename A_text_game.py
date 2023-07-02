@@ -349,18 +349,15 @@ def fight():
                     inventory_print()
                     item_use_ans = input(f"Try again or go{f_back()})\n")
 
-                item_use_functions = {
-                    "Health potion": health_potion.use_health_potion,
-                    "Sword": sword.use_sword,
-                    "Golden apple": golden_apple.use_golden_apple,
-                    "Holy grenade": bomb.use_bomb,
-                    "Life bomb": bomb.use_bomb,
-                    "Fire bomb": bomb.use_bomb
-                }
+                if item_use_ans == "Health potion":
+                    use_health_potion()
+                elif item_use_ans == "Sword":
+                    use_sword()
+                elif item_use_ans == "Golden apple":
+                    use_golden_apple()
+                elif item_use_ans in ["Holy grenade", "Life bomb", "Fire bomb"]:
+                    use_bomb(item_use_ans)
 
-                if item_use_ans in item_use_functions:
-                    bomb.name = item_use_ans
-                    item_use_functions[item_use_ans]()
 
                 if fight_death_check():
                     skip_list.append("exit")
