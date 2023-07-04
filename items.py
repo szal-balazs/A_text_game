@@ -1,5 +1,13 @@
-from textgame import *
+import random
+from misc import *
 
+def get_item(item_name):
+    if "items" not in GameVar.move_list:
+        GameVar.move_list.append("items")
+    if item_name not in GameVar.inventory_dict:
+        GameVar.inventory_dict[item_name] = 1
+    else:
+        GameVar.inventory_dict[item_name] += 1
 
 def use_health_potion():
     name = "Health potion"
