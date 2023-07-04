@@ -22,9 +22,9 @@ def loot_legendary():
     loot_dict["Golden apple"] += 1
 
 
-def dynamic_percentage(percentage_list):
-    formula_x = - 0.5 + (player.luck / 10)
-    formula_b = 1 - (player.luck / 10)
+def dynamic_percentage(percentage_list, luck):
+    formula_x = - 0.5 + (luck / 10)
+    formula_b = 1 - (luck / 10)
 
     distance_in_x = [0]
     temp = 0
