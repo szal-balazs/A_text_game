@@ -1,5 +1,3 @@
-from textgame import *
-
 
 def main():
     name_create()

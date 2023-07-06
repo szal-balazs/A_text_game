@@ -1,7 +1,6 @@
 import random
 from loot import looting
 
-
 class Character:
     def __init__(self, name, hp, power):
         self.name = name

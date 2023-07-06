@@ -1,40 +1,40 @@
-from textgame import *
 import random
+from data_and_misc import *
 
 
 def generate_enemy():
     enemy_name_list = ["Zombie", "Werewolf", "Vampire"]
-    enemy.name = random.choice(enemy_name_list)
-    enemy.hp = 10
-    enemy.power = 2
-    enemy.mob_class = "mob"
-    enemy.type = enemy.type_def()
+    Gv.enemy.name = random.choice(enemy_name_list)
+    Gv.enemy.hp = 10
+    Gv.enemy.power = 2
+    Gv.enemy.mob_class = "mob"
+    Gv.enemy.type = type_def()
 
 
 def generate_boss():
     enemy_name_list = ["Dark Troll", "Necromancer", "Mad Tree"]
-    enemy.name = random.choice(enemy_name_list)
-    enemy.hp = 13
-    enemy.power = 3
-    enemy.mob_class = "boss"
-    enemy.type = enemy.type_def()
+    Gv.enemy.name = random.choice(enemy_name_list)
+    Gv.enemy.hp = 13
+    Gv.enemy.power = 3
+    Gv.enemy.mob_class = "boss"
+    Gv.enemy.type = type_def()
 
 
 def type_def():
-    if enemy.name in Enemy.unholy:
+    if Gv.enemy.name in Enemy.unholy:
         return "Unholy"
-    elif enemy.name in Enemy.undead:
+    elif Gv.enemy.name in Enemy.undead:
         return "Undead"
-    elif enemy.name in Enemy.creature:
+    elif Gv.enemy.name in Enemy.creature:
         return "Creature"
 
 
 def enemy_stat():
     e_stat = {
-        "Name": enemy.name,
-        "HP": enemy.hp,
-        "Power": enemy.power,
-        "Type": enemy.type
+        "Name": Gv.enemy.name,
+        "HP": Gv.enemy.hp,
+        "Power": Gv.enemy.power,
+        "Type": Gv.enemy.type
     }
 
     for key in e_stat.keys():
@@ -42,49 +42,49 @@ def enemy_stat():
 
 
 def enemy_attack():
-    print(f"{format_enemy_name(enemy.name)} is attacked you.")
+    print(f"{format_enemy_name(Gv.enemy.name)} is attacked you.")
 
     # Special pre damage interactions
-    if enemy.name == "Werewolf":
-        enemy.werewolf_special()
+    if Gv.enemy.name == "Werewolf":
+        werewolf_special()
 
     # Taking damage
-    player.hp = int(player.hp) - int(enemy.enemy_damage())
+    Gv.player.hp = Gv.player.hp - enemy_damage()
 
-    print(f"{enemy.name} dealt {enemy.enemy_damage()} damage to you.")
+    print(f"{Gv.enemy.name} dealt {enemy_damage()} damage to you.")
 
     # Resetting damage
 
-    if enemy.name == "Werewolf" and Enemy.spec_att_timer <= 3:
-        enemy.spec_att_timer = 0
+    if Gv.enemy.name == "Werewolf" and Gv.enemy_sat <= 3:
+        Gv.enemy_sat = 0
 
     # Special after damage interactions
-    if enemy.name == "Vampire":
-        enemy.vampire_special()
+    if Gv.enemy.name == "Vampire":
+        vampire_special()
 
     # Summary
-    if not p_dead():
-        print(f"Your hp is {format_stats(player.hp)}.\n")
+    if not Gv.player.hp > 0:
+        print(f"Your hp is {format_stats(Gv.player.hp)}.\n")
     else:
         print(f"You have no hp left.\n")
 
 
 def enemy_damage():
-    if enemy.name == "Werewolf" and Enemy.spec_att_timer == 3:
+    if Gv.enemy.name == "Werewolf" and Gv.enemy_sat == 3:
         bonus_dmg = 2
     else:
         bonus_dmg = 0
 
-    return int(enemy.power) + bonus_dmg
+    return Gv.enemy.power + bonus_dmg
 
 
 def werewolf_special():
-    Enemy.spec_att_timer += 1
-    if Enemy.spec_att_timer == 3:
-        print(f"The {format_enemy_name(enemy.name)} slashed you with its claws.")
+    Gv.enemy_sat += 1
+    if Gv.enemy_sat == 3:
+        print(f"The {format_enemy_name(Gv.enemy.name)} slashed you with its claws.")
 
 
 def vampire_special():
-    v_heal = round(random.randint(0, int(enemy.enemy_damage())) / 2)
-    enemy.hp += v_heal
-    print(f"{enemy.name} healed {format_stats(v_heal)} hp and has {format_stats(enemy.hp)} hp.")
+    v_heal = round(random.randint(0, enemy_damage()) / 2)
+    Gv.enemy.hp += v_heal
+    print(f"{Gv.enemy.name} healed {format_stats(v_heal)} hp and has {format_stats(Gv.enemy.hp)} hp.")

@@ -1,5 +1,5 @@
 from items import get_item, generate_bomb
-from misc import *
+from data_and_misc import *
 import random
 
 
@@ -86,7 +86,7 @@ class Loot:
     loot_dict = {}
 
     cr_percentage = [20, 55, 25]
-    cra_percentage = [20, 50, 20, 10]
+    crl_percentage = [20, 50, 20, 10]
     ans_list = ("yes", "no")
 
 
@@ -102,6 +102,6 @@ def looting(luck, mob_class):
             loot_table_cr(perc)
         elif mob_class == "boss":
             for i in range(2):
-                perc = dynamic_percentage(Loot.cra_percentage, luck)
+                perc = dynamic_percentage(Loot.crl_percentage, luck)
                 loot_table_cra(perc)
         loot_sum()
