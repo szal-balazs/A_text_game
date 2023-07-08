@@ -1,29 +1,28 @@
 from items import get_item, generate_bomb
-from data_and_misc import *
+from other import *
 import random
 
 
-def loot_item(item_name):
-    get_item(item_name)
-    Loot.loot_dict.setdefault(item_name, 0)
-    Loot.loot_dict[item_name] += 1
+def loot_item(item_name, loot_dict):
+    loot_dict.setdefault(item_name, 0)
+    loot_dict[item_name] += 1
 
 
-def loot_common():
+def loot_common(loot_dict):
     common_roll = random.randint(0, 100)
     if common_roll < 70:
-        loot_item("Health potion")
+        loot_item("Health potion", loot_dict)
 
     else:
-        loot_item(generate_bomb())
+        loot_item(generate_bomb(), loot_dict)
 
 
-def loot_rare():
-    loot_item("Sword")
+def loot_rare(loot_dict):
+    loot_item("Sword", loot_dict)
 
 
-def loot_legendary():
-    loot_item("Golden apple")
+def loot_legendary(loot_dict):
+    loot_item("Golden apple", loot_dict)
 
 
 def dynamic_percentage(percentage_list, luck):
@@ -46,62 +45,54 @@ def dynamic_percentage(percentage_list, luck):
     return dyn_perc
 
 
-def loot_table_cra(percentages):
+def loot_table_crl(luck, loot_dict):
+    crl_percentage = [20, 50, 20, 10]
+    din_pr = dynamic_percentage(crl_percentage, luck)
+
     loot_roll = random.uniform(0, 100)
 
-    din_pr = percentages
-
     if din_pr[0] <= loot_roll < din_pr[1]:
-        loot_common()
+        loot_common(loot_dict)
     elif din_pr[1] <= loot_roll < din_pr[2]:
-        loot_rare()
+        loot_rare(loot_dict)
     elif loot_roll >= din_pr[2]:
-        loot_legendary()
+        loot_legendary(loot_dict)
 
 
-def loot_table_cr(percentages):
+def loot_table_cr(luck, loot_dict):
+    cr_percentage = [20, 55, 25]
+    din_pr = dynamic_percentage(cr_percentage, luck)
+
     loot_roll = random.uniform(0, 100)
 
-    din_pr = percentages
-
     if din_pr[0] <= loot_roll < din_pr[1]:
-        loot_common()
+        loot_common(loot_dict)
     elif din_pr[1] <= loot_roll:
-        loot_rare()
+        loot_rare(loot_dict)
 
 
-def loot_sum():
-    if sum(Loot.loot_dict.values()) > 0:
+def sum_loot(loot_dict):
+    if loot_dict:
         print(f"You found:")
-        for key, value in Loot.loot_dict.items():
+        for key, value in loot_dict.items():
             if value > 0:
                 print(f"{value} {format_items(key)}")
     else:
         print("There was nothing in there.")
 
-    Loot.loot_dict.clear()
 
-
-class Loot:
-    loot_dict = {}
-
-    cr_percentage = [20, 55, 25]
-    crl_percentage = [20, 50, 20, 10]
-    ans_list = ("yes", "no")
-
-
-def looting(luck, mob_class):
+def looting(luck, mob_class, inventory):
+    loot_ans_list = ("yes", "no")
     lootable_names = ("chest", "pouch")
     loot_question = f"You found a {random.choice(lootable_names)}.\n" \
-                    f"Do you want to search it ? {format_ans_lists(Loot.ans_list)}"
-    loot_ans = answer_check(Loot.ans_list, loot_question)
+                    f"Do you want to search it ? {format_ans_lists(loot_ans_list)}"
+    loot_ans = check_answer(loot_ans_list, loot_question)
 
     if loot_ans == "yes":
+        loot_dict = {}
         if mob_class == "mob":
-            perc = dynamic_percentage(Loot.cr_percentage, luck)
-            loot_table_cr(perc)
+            loot_table_cr(luck, loot_dict)
         elif mob_class == "boss":
             for i in range(2):
-                perc = dynamic_percentage(Loot.crl_percentage, luck)
-                loot_table_cra(perc)
-        loot_sum()
+                loot_table_crl(luck, loot_dict)
+        sum_loot(loot_dict)

@@ -1,5 +1,7 @@
 import random
+
 from loot import looting
+
 
 class Character:
     def __init__(self, name, hp, power):
@@ -104,13 +106,14 @@ def skill_fury():
 
 
 def name_create():
-    player.name = input("What is your name?\n")
-    if len(player.name) == 0:
-        player.name = "Anon"
-    print(f"Your name is {format_stats(player.name)}.\n")
+    name = input("What is your name?\n")
+    if len(name) == 0:
+        name = "Anon"
+    print(f"Your name is {format_stats(name)}.\n")
+    return name
 
 
-def player_create():
+def player_create(player):
     player.hp = 20
     player.power = 3
 
@@ -400,7 +403,7 @@ def skill_find():
 
 
 # Other game elements ------------------------------------
-def restart():
+def restart(player):
     run_question = f"Do you want to restart ? {format_ans_lists(GameVar.ans_list)}"
     GameVar.run_ans = answer_check(GameVar.ans_list, run_question)
     if GameVar.run_ans == "no":
@@ -409,7 +412,7 @@ def restart():
     elif GameVar.run_ans == "yes":
         GameVar.diff_lvl = 1
         GameVar.inventory_dict.clear()
-        player_create()
+        player_create(player)
 
 
 def mob_round():
@@ -448,23 +451,36 @@ def e_dead():
 
 
 player = Player("", 0, 0)
-enemy = Enemy("", 0, 0)
 
-name_create()
-player_create()
 
-while GameVar.run_ans == "yes":
+def main():
+    name = name_create()
+    hp = 0
+    power = 0
+    global player
+    player = Player("", 0, 0)
+    player_create(player)
 
-    for x in range(GameVar.diff_lvl):
-        if p_dead():
-            break
-        mob_round()
-    if not p_dead():
-        if GameVar.diff_lvl == 1:
-            skill_find()
-        boss_round()
+    enemy_hp = 0
+    enemy_power = 0
+    enemy = Enemy("", enemy_hp, enemy_power)
 
-    if not p_dead():
-        next_lvl()
-    elif p_dead:
-        restart()
+    while GameVar.run_ans == "yes":
+
+        for x in range(GameVar.diff_lvl):
+            if p_dead():
+                break
+            mob_round()
+        if not p_dead():
+            if GameVar.diff_lvl == 1:
+                skill_find()
+            boss_round()
+
+        if not p_dead():
+            next_lvl()
+        elif p_dead:
+            restart(player)
+
+
+if __name__ == "main":
+    main()

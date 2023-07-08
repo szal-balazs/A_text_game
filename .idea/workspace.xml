@@ -5,14 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="319e411d-d0ff-49ba-bb1b-5398e49c8f73" name="Changes" comment="1">
-      <change afterPath="$PROJECT_DIR$/data_and_misc.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/other.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/enemy_actions.py" beforeDir="false" afterPath="$PROJECT_DIR$/enemy_actions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_and_misc.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/enemy_actions.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/items.py" beforeDir="false" afterPath="$PROJECT_DIR$/items.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/loot.py" beforeDir="false" afterPath="$PROJECT_DIR$/loot.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/misc.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/player_actions.py" beforeDir="false" afterPath="$PROJECT_DIR$/player_actions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/player_actions.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/textgame.py" beforeDir="false" afterPath="$PROJECT_DIR$/textgame.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -31,7 +31,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="structure_change" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -95,6 +95,9 @@
       <module name="textgame" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="C:\Users\szalai\PycharmProjects\pythonProject3\venv\Scripts\python.exe" />
       <option name="SDK_NAME" value="Python 3.11 (pythonProject3)" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -187,7 +190,14 @@
       <option name="project" value="LOCAL" />
       <updated>1688489201426</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="1">
+      <created>1688666638534</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1688666638534</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -206,7 +216,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="structure_overhaul" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>

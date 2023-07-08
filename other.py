@@ -14,6 +14,22 @@ class Player(Character):
         self.max_luck = 8
         self.bonus_dmg = 0
 
+    monster_killed = 0
+    equipped = []
+    skill_list = []
+    skill_used = "no"
+    fury_cd = 0
+    def __str__(self):
+        stat = {
+            "Name": self.name,
+            "HP": self.hp,
+            "Power": self.power
+        }
+        s = ""
+        for key in stat.keys():
+            s += f"{format_stats_name(key)} : {format_stats(stat[key])}\n"
+        return s
+
     def damage(self):
         return self.power + self.bonus_dmg
 
@@ -25,49 +41,33 @@ class Enemy(Character):
         self.mob_class = ""
         self.type = ""
 
-    unholy = ("Vampire", "Dark Troll")
-    undead = ("Zombie", "Necromancer")
-    creature = ("Werewolf", "Mad Tree")
-
-
-# Game variables
-class Gv:
-    player = Player("", 0, 0)
-    enemy = Enemy("", 0, 0)
-
-    run_ans = "yes"
-    ans_list = ("yes", "no")
-    move_list = ["attack", "run"]
-
-    diff_lvl = 1
-    monster_killed = 0
-
-    inventory_dict = {}
-    equipped = []
-
-    skill_list = []
-    skill_used = "no"
-
     enemy_sat = 0
 
-    fury_cd = 0
-
-
-def inventory_print():
+def inventory_print(inventory):
     print("Your inventory:")
 
-    if any(Gv.inventory_dict.values()):
-        for key, value in Gv.inventory_dict.items():
+    if any(inventory.values()):
+        for key, value in inventory.items():
             if value > 0:
                 print(f"{format_items(key)} : {value}")
     else:
         print("Empty")
 
 
-def answer_check(answer_list, question):
+def check_answer(answer_list, question):
     while (answer := input(f"{question}:\n")) not in answer_list:
         print(f"I don't understand !\n")
     return answer
+
+
+def check_ans_bool(question):
+    while (answer := input(f"{question}:\n")) not in ("yes", "no"):
+        print(f"I don't understand !\n")
+
+    if answer == "yes":
+        return True
+    else:
+        return False
 
 
 def format_ans_lists(ans):
