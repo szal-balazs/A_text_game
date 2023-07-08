@@ -4,10 +4,8 @@ from game_elements import *
 def get_item(item_name, inventory, move_list):
     if "items" not in move_list:
         move_list.append("items")
-    if item_name not in inventory:
-        inventory[item_name] = 1
-    else:
-        inventory[item_name] += 1
+    inventory.setdefault(item_name, 0)
+    inventory[item_name] += 1
 
 
 def use_health_potion(player, inventory):
@@ -31,7 +29,7 @@ def use_sword(player, inventory):
             inventory[name] -= 1
             player.bonus_dmg += 2
             player.equipped.append("Sword")
-            print(f"You equipped the sword. You deal {format_stats(player.damage)} damage now.\n")
+            print(f"You equipped the sword. You deal {format_stats(player.damage())} damage now.\n")
     else:
         print(f"You already have a {format_items(name)} equipped.\n")
 

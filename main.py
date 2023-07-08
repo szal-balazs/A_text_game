@@ -7,7 +7,7 @@ def main():
     power = 0
 
     player = Player(name, hp, power)
-    enemy = Enemy(name, hp, power)
+    enemy1 = Enemy(name, hp, power)
 
     create_name(player)
     create_player(player)
@@ -15,23 +15,22 @@ def main():
     move_list = ["attack", "run"]
 
     inventory_dict = {}
-    diff_lvl = 1
 
     while True:
 
-        for num in range(diff_lvl):
+        for num in range(player.diff_lvl):
             if dead(player):
                 break
-            fighting_round(player, enemy, "mob", move_list, inventory_dict)
+            fighting_round(player, enemy1, "mob", move_list, inventory_dict)
         if not dead(player):
-            if diff_lvl == 1:
+            if player.diff_lvl == 1:
                 find_skill(player, move_list)
-            fighting_round(player, enemy, "boss", move_list, inventory_dict)
+            fighting_round(player, enemy1, "boss", move_list, inventory_dict)
 
         if not dead(player):
-            next_lvl(player, inventory_dict, diff_lvl)
+            next_lvl(player, inventory_dict)
         elif dead(player):
-            restart(player, inventory_dict, diff_lvl)
+            restart(player, inventory_dict)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from items import get_item, generate_bomb
+from items import generate_bomb
 from game_elements import *
 import random
 
@@ -45,9 +45,9 @@ def dynamic_percentage(percentage_list, luck):
     return dyn_perc
 
 
-def loot_table_crl(luck, loot_dict):
+def loot_table_crl(player, loot_dict):
     crl_percentage = [20, 50, 20, 10]
-    din_pr = dynamic_percentage(crl_percentage, luck)
+    din_pr = dynamic_percentage(crl_percentage, player.luck)
 
     loot_roll = random.uniform(0, 100)
 
@@ -59,9 +59,9 @@ def loot_table_crl(luck, loot_dict):
         loot_legendary(loot_dict)
 
 
-def loot_table_cr(luck, loot_dict):
+def loot_table_cr(player, loot_dict):
     cr_percentage = [20, 55, 25]
-    din_pr = dynamic_percentage(cr_percentage, luck)
+    din_pr = dynamic_percentage(cr_percentage, player.luck)
 
     loot_roll = random.uniform(0, 100)
 
@@ -81,7 +81,7 @@ def sum_loot(loot_dict):
         print("There was nothing in there.")
 
 
-def looting(luck, mob_class, inventory):
+def looting(player, mob_class, inventory, move_list):
     loot_ans_list = ("yes", "no")
     lootable_names = ("chest", "pouch")
     loot_question = f"You found a {random.choice(lootable_names)}.\n" \
@@ -91,8 +91,14 @@ def looting(luck, mob_class, inventory):
     if loot_ans == "yes":
         loot_dict = {}
         if mob_class == "mob":
-            loot_table_cr(luck, loot_dict)
+            loot_table_cr(player, loot_dict)
         elif mob_class == "boss":
             for i in range(2):
-                loot_table_crl(luck, loot_dict)
+                loot_table_crl(player, loot_dict)
         sum_loot(loot_dict)
+
+        for key, value in loot_dict.items():
+            if "items" not in move_list:
+                move_list.append("items")
+            inventory.setdefault(key, 0)
+            inventory[key] += value
