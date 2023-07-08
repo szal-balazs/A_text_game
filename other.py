@@ -1,48 +1,3 @@
-class Character:
-    def __init__(self, name, hp, power):
-        self.name = name
-        self.hp = hp
-        self.power = power
-
-
-class Player(Character):
-
-    def __init__(self, name, hp, power):
-        super().__init__(name, hp, power)
-        self.max_hp = 20
-        self.luck = 0
-        self.max_luck = 8
-        self.bonus_dmg = 0
-
-    monster_killed = 0
-    equipped = []
-    skill_list = []
-    skill_used = "no"
-    fury_cd = 0
-    def __str__(self):
-        stat = {
-            "Name": self.name,
-            "HP": self.hp,
-            "Power": self.power
-        }
-        s = ""
-        for key in stat.keys():
-            s += f"{format_stats_name(key)} : {format_stats(stat[key])}\n"
-        return s
-
-    def damage(self):
-        return self.power + self.bonus_dmg
-
-
-class Enemy(Character):
-
-    def __init__(self, name, hp, power):
-        super().__init__(name, hp, power)
-        self.mob_class = ""
-        self.type = ""
-
-    enemy_sat = 0
-
 def inventory_print(inventory):
     print("Your inventory:")
 
@@ -92,3 +47,28 @@ def format_items(ans):
 
 def f_back():
     return f"\033[92m back\033[0m"
+
+
+def enemy_stat(enemy):
+    e_stat = {
+        "Name": enemy.name,
+        "HP": enemy.hp,
+        "Power": enemy.power,
+        "Type": enemy.type
+    }
+
+    for key in e_stat.keys():
+        print(f"{format_stats_name(key)} : {format_stats(e_stat[key])}")
+
+
+def player_stat(player):
+    stat = {
+        "Name": player.name,
+        "HP": player.hp,
+        "Power": player.power,
+        "Damage": player.damage()
+    }
+
+    print(f"\nYour stats are:")
+    for key in stat.keys():
+        print(f"{format_stats_name(key)} : {format_stats(stat[key])}")

@@ -1,5 +1,5 @@
 from items import get_item, generate_bomb
-from other import *
+from game_elements import *
 import random
 
 

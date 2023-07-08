@@ -1,4 +1,3 @@
-from other import Player, Enemy
 from encounters import *
 
 
@@ -23,11 +22,11 @@ def main():
         for num in range(diff_lvl):
             if dead(player):
                 break
-            fighting_round(player, enemy, "mob", inventory_dict)
+            fighting_round(player, enemy, "mob", move_list, inventory_dict)
         if not dead(player):
             if diff_lvl == 1:
                 find_skill(player, move_list)
-            fighting_round(player, enemy, "boss", inventory_dict)
+            fighting_round(player, enemy, "boss", move_list, inventory_dict)
 
         if not dead(player):
             next_lvl(player, inventory_dict, diff_lvl)
@@ -35,5 +34,5 @@ def main():
             restart(player, inventory_dict, diff_lvl)
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     main()
