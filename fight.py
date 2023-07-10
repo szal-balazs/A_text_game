@@ -75,7 +75,11 @@ def werewolf_special(enemy):
 def vampire_special(enemy):
     v_heal = round(random.randint(0, enemy_damage(enemy)) / 2)
     enemy.hp += v_heal
-    print(f"{enemy.name} healed {format_stats(v_heal)} hp and has {format_stats(enemy.hp)} hp.")
+    if v_heal > 0:
+        print(f"{format_enemy_name(enemy.name)} healed {format_stats(v_heal)} hp "
+              f"and has {format_stats(enemy.hp)} hp.")
+    else:
+        print(f"{format_enemy_name(enemy.name)} healed no hp.")
 
 
 def fight_death_check(player, enemy):
@@ -88,13 +92,13 @@ def fight_death_check(player, enemy):
         return True
 
 
-def end_turn(player):
+def cooling_down(player):
     if player.fury_cd > 0:
         player.fury_cd -= 1
     player.skill_used = False
 
 
-def inventory_print(inventory):
+def print_inventory(inventory):
     print("Your inventory:")
 
     if any(inventory.values()):
@@ -103,6 +107,23 @@ def inventory_print(inventory):
                 print(f"{format_items(key)} : {value}")
     else:
         print("Empty")
+
+
+def how_many_items(item_name, inventory):
+    item_count = range(1, inventory[item_name])
+    uses = 0
+    while uses not in item_count:
+        try:
+            uses = int(input("How many do you want to use ?\n"))
+        except ValueError:
+            print("Please enter a whole number.")
+        else:
+            if uses > inventory[item_name]:
+                print(f"You don't have that many {format_items(item_name)}. ")
+            else:
+                break
+
+    return uses
 
 
 def fighting(player, enemy, move_list, inventory):
@@ -125,20 +146,26 @@ def fighting(player, enemy, move_list, inventory):
                 move_ans = check_answer(move_list, fight_question)
 
         elif move_ans == "items" and "items" in move_list:
-            inventory_print(inventory)
+            print_inventory(inventory)
             item_use_ans = input(f"\nWhat item do you want to use (or go{f_back()})\n")
             while item_use_ans not in inventory.keys() and item_use_ans != "back":
-                inventory_print(inventory)
+                print_inventory(inventory)
                 item_use_ans = input(f"Try again or go{f_back()})\n")
 
             if item_use_ans == "Health potion":
-                use_health_potion(player, inventory)
+                uses = how_many_items(item_use_ans, inventory)
+                for i in range(uses):
+                    use_health_potion(player, inventory),
             elif item_use_ans == "Sword":
                 use_sword(player, inventory)
             elif item_use_ans == "Golden apple":
-                use_golden_apple(player, inventory)
+                uses = how_many_items(item_use_ans, inventory)
+                for i in range(uses):
+                    use_golden_apple(player, inventory)
             elif item_use_ans in ["Holy grenade", "Life bomb", "Fire bomb"]:
-                use_bomb(item_use_ans, enemy, inventory)
+                uses = how_many_items(item_use_ans, inventory)
+                for i in range(uses):
+                    use_bomb(item_use_ans, enemy, inventory)
 
             if fight_death_check(player, enemy):
                 skip_list.append("exit")
@@ -166,7 +193,8 @@ def fighting(player, enemy, move_list, inventory):
             else:
                 move_ans = check_answer(move_list, fight_question)
 
-        end_turn(player)
+        if move_ans in ("attack", "skills"):
+            cooling_down(player)
 
     if move_ans == "run":
         print("You ran away!\n")

@@ -25,29 +25,35 @@ def loot_legendary(loot_dict):
     loot_item("Golden apple", loot_dict)
 
 
-def dynamic_percentage(percentage_list, luck):
-    formula_x = - 0.5 + (luck / 10)
-    formula_b = 1 - (luck / 10)
+def dynamic_percentage(player, percentage_list):
+    m = 0.5
+    b = 1
+    formula_m = 0 + 2*(m * (player.luck / player.max_luck))
+    formula_b = 1 - (b * (player.luck / player.max_luck))
 
-    distance_in_x = [0]
+    distance_from_zero = [0]
     temp = 0
     for num in percentage_list:
         temp = round(2 * num / 100 + temp, 3)
-        distance_in_x.append(temp)
+        distance_from_zero.append(temp)
 
-    heights = [round(formula_x * distance_in_x[num] + formula_b, 3) for num in range(len(distance_in_x))]
+    distance_of_points = [round(distance_from_zero[num + 1] - distance_from_zero[num], 3)
+                          for num in range(len(distance_from_zero) - 1)]
 
-    areas = [round((heights[num] + heights[num + 1]) / 2 * distance_in_x[num + 1], 3)
+    heights = [round(formula_m * distance_from_zero[num] + formula_b, 3) for num in range(len(distance_from_zero))]
+
+    areas = [round(((heights[num] + (heights[num + 1]) / 2) * distance_of_points[num]), 3)
              for num in range(len(heights) - 1)]
 
-    dyn_perc = [round(sum(areas[:num]) / sum(areas) * 100, 2) for num in range(1, len(areas))]
+    dyn_perc = [round(sum(areas[:num]) / sum(areas) * 100, 2)
+                for num in range(1, len(areas))]
 
     return dyn_perc
 
 
 def loot_table_crl(player, loot_dict):
-    crl_percentage = [20, 50, 20, 10]
-    din_pr = dynamic_percentage(crl_percentage, player.luck)
+    crl_percentage = [15, 65, 20, 10]
+    din_pr = dynamic_percentage(player, crl_percentage)
 
     loot_roll = random.uniform(0, 100)
 
@@ -60,8 +66,8 @@ def loot_table_crl(player, loot_dict):
 
 
 def loot_table_cr(player, loot_dict):
-    cr_percentage = [20, 55, 25]
-    din_pr = dynamic_percentage(cr_percentage, player.luck)
+    cr_percentage = [20, 70, 10]
+    din_pr = dynamic_percentage(player, cr_percentage)
 
     loot_roll = random.uniform(0, 100)
 
@@ -78,7 +84,7 @@ def sum_loot(loot_dict):
             if value > 0:
                 print(f"{value} {format_items(key)}")
     else:
-        print("There was nothing in there.")
+        print("There was nothing in there.\n")
 
 
 def looting(player, mob_class, inventory, move_list):

@@ -71,17 +71,17 @@ def create_player(player):
     player.power = 3
 
 
-def generate_enemy(enemy, mob_type):
+def generate_enemy(enemy, mob_type, diff_lvl):
     if mob_type == "mob":
         enemy_name_list = ["Zombie", "Werewolf", "Vampire"]
         enemy.name = random.choice(enemy_name_list)
-        enemy.hp = 10
-        enemy.power = 2
+        enemy.hp = 9 + diff_lvl
+        enemy.power = 2 + random.randint(0, diff_lvl)
     elif mob_type == "boss":
         enemy_name_list = ["Dark Troll", "Necromancer", "Mad Tree"]
         enemy.name = random.choice(enemy_name_list)
-        enemy.hp = 13
-        enemy.power = 3
+        enemy.hp = 11 + 2 * diff_lvl
+        enemy.power = 3 + random.randint(0, diff_lvl)
     enemy.mob_class = mob_type
     enemy.type = def_type(enemy)
 
@@ -121,6 +121,10 @@ def next_lvl(player, inventory):
         print(f"\nThe difficulty level is {player.diff_lvl}.\n")
     else:
         restart(player, inventory)
+
+
+def menu():
+    pass
 
 
 def check_answer(answer_list, question):

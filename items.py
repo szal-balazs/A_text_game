@@ -10,7 +10,7 @@ def get_item(item_name, inventory, move_list):
 
 def use_health_potion(player, inventory):
     name = "Health potion"
-    if inventory["Health potion"] <= 0:
+    if inventory[name] <= 0:
         print(f"You have no {format_items(name)}")
     else:
         inventory[name] -= 1
@@ -22,14 +22,14 @@ def use_health_potion(player, inventory):
 
 def use_sword(player, inventory):
     name = "Sword"
-    if "sword" not in player.equipped:
+    if name not in player.equipped:
         if name not in inventory:
             print(f"You have no {format_items(name)}")
         else:
             inventory[name] -= 1
             player.bonus_dmg += 2
-            player.equipped.append("Sword")
-            print(f"You equipped the sword. You deal {format_stats(player.damage())} damage now.\n")
+            player.equipped.append(name)
+            print(f"You equipped the {format_items(name)}. You deal {format_stats(player.damage())} damage now.\n")
     else:
         print(f"You already have a {format_items(name)} equipped.\n")
 
@@ -50,8 +50,6 @@ def generate_bomb():
 
 
 def use_bomb(bomb_name, enemy, inventory):
-    inventory[bomb_name] -= 1
-
     def is_weak():
 
         conditions = {
@@ -68,3 +66,5 @@ def use_bomb(bomb_name, enemy, inventory):
         print(f"{format_enemy_name(enemy.name)} has no hp left.\n")
     else:
         print(f"{format_enemy_name(enemy.name)} has {format_stats(enemy.hp)} hp left.\n")
+
+    inventory[bomb_name] -= 1
