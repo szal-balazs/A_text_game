@@ -14,8 +14,6 @@ def main():
     player.create_name()
     player.create_stats()
 
-    move_list = ["attack", "run"]
-
     inventory_dict = {}
 
     while True:
@@ -23,11 +21,11 @@ def main():
         for num in range(player.diff_lvl):
             if player.dead():
                 break
-            fighting_round(player, enemy1, "mob", move_list, inventory_dict)
+            fighting_round(player, enemy1, "mob", inventory_dict)
         if not player.dead():
             if player.diff_lvl == 1:
-                find_skill(player, move_list)
-            fighting_round(player, enemy1, "boss", move_list, inventory_dict)
+                find_skill(player)
+            fighting_round(player, enemy1, "boss", inventory_dict)
 
         if not player.dead():
             next_lvl(player, inventory_dict)

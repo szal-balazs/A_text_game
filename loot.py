@@ -87,7 +87,7 @@ def sum_loot(loot_dict):
         print("There was nothing in there.\n")
 
 
-def looting(player, mob_class, inventory, move_list):
+def looting(player, mob_class, inventory):
     loot_ans_list = ("yes", "no")
     lootable_names = ("chest", "pouch")
     loot_question = f"You found a {random.choice(lootable_names)}.\n" \
@@ -104,7 +104,7 @@ def looting(player, mob_class, inventory, move_list):
         sum_loot(loot_dict)
 
         for key, value in loot_dict.items():
-            if "items" not in move_list:
-                move_list.append("items")
+            if "items" not in player.moves:
+                player.moves.append("items")
             inventory.setdefault(key, 0)
             inventory[key] += value

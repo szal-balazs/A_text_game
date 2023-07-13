@@ -23,15 +23,15 @@ class Enemy(Character):
         return s
 
     def hp_left(self):
-        if not self.dead():
-            print(f"{format_enemy_name(self.name)} has {format_stats(self.hp)} hp left.\n")
-        else:
+        if self.dead():
             print(f"{format_enemy_name(self.name)} has no hp left.\n")
+        else:
+            print(f"{format_enemy_name(self.name)} has {format_stats(self.hp)} hp left.\n")
 
-    def generate(self, mob_type, diff_lvl):
+    def generate(self, player, mob_type):
         enemy_boss_name_list = ["Dark Troll", "Necromancer", "Mad Tree"]
         enemy_mob_name_list = ["Zombie", "Werewolf", "Vampire"]
-
+        diff_lvl = player.diff_lvl
         if mob_type == "mob":
             self.name = random.choice(enemy_mob_name_list)
             self.hp = 9 + diff_lvl
@@ -54,3 +54,30 @@ class Enemy(Character):
             return "Undead"
         elif self.name in creature:
             return "Creature"
+
+    def attack(self, player):
+        print(f"{format_enemy_name(self.name)} is attacked you.")
+        player_hp_before = player.hp
+
+        if self.name == "Werewolf" and self.spec_att_timer == 2:
+            print(f"The {format_enemy_name(self.name)} slashed you with its claws.")
+            player.hp = player.hp - 2 * self.power
+            self.spec_att_timer = 0
+        else:
+            player.hp = player.hp - self.power
+            self.spec_att_timer += 1
+            if self.name == "Vampire":
+                v_heal = round(random.randint(0, self.power) / 2)
+                self.hp += v_heal
+                if v_heal > 0:
+                    print(f"{format_enemy_name(self.name)} healed {format_stats(v_heal)} hp "
+                          f"and has {format_stats(self.hp)} hp.")
+                else:
+                    print(f"{format_enemy_name(self.name)} healed no hp.")
+
+        player_hp_after = player.hp
+        damage_dealt = player_hp_before - player_hp_after
+
+        print(f"{self.name} dealt {damage_dealt} damage to you.")
+
+        player.hp_left()

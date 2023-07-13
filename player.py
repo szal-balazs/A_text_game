@@ -1,5 +1,6 @@
 from game_elements import *
 
+
 class Character:
     def __init__(self, name, hp, power):
         self.name = name
@@ -24,6 +25,7 @@ class Player(Character):
         self.monster_killed = 0
         self.skill_used = False
         self.fury_cd = 0
+        self.moves = ["attack", "run"]
 
     def __str__(self):
         stat = {
@@ -65,9 +67,10 @@ class Player(Character):
             print(f"\nYou used Fury.")
             print(f"You dealt {fury_dmg} damage.")
             enemy.hp_left()
+            self.fury_cd = 3
         elif self.fury_cd > 0:
             print(f"\nYou can't use this skill for {self.fury_cd} turn(s).\n")
-        self.fury_cd = 3
+
 
     def cooldown(self):
         if self.fury_cd > 0:
@@ -75,7 +78,7 @@ class Player(Character):
         self.skill_used = False
 
     def hp_left(self):
-        if not self.dead:
-            print(f"Your hp is {format_stats(self.hp)}.\n")
-        else:
+        if self.dead():
             print(f"You have no hp left.\n")
+        else:
+            print(f"Your hp is {format_stats(self.hp)}.\n")
