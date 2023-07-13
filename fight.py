@@ -1,32 +1,6 @@
 from items import *
-
-
-def players_attack(player, enemy):
-    enemy.hp = enemy.hp - player.damage()
-    print(f"\nYou attacked.")
-    print(f"You dealt {player.damage()} damage.")
-    if not dead(enemy):
-        print(f"{format_enemy_name(enemy.name)} has {format_stats(enemy.hp)} hp left.\n")
-    else:
-        print(f"{format_enemy_name(enemy.name)} has no hp left.\n")
-
-
-def skill_fury(player, enemy):
-    if player.fury_cd == 0:
-        enemy_hp_before = [enemy.hp]
-        enemy.hp = enemy.hp - player.damage() - player.damage()
-        player.skill_used = True
-        enemy_hp_after = [enemy.hp]
-        fury_dmg = enemy_hp_before[0] - enemy_hp_after[0]
-        print(f"\nYou used Fury.")
-        print(f"You dealt {fury_dmg} damage.")
-        if not dead(enemy):
-            print(f"{format_enemy_name(enemy.name)} has {format_stats(enemy.hp)} hp left.\n")
-        else:
-            print(f"{format_enemy_name(enemy.name)} has no hp left.\n")
-    elif player.fury_cd > 0:
-        print(f"\nYou can't use this skill for {player.fury_cd} turn(s).\n")
-    player.fury_cd = 3
+from player import *
+from game_elements import check_answer
 
 
 def enemy_attack(player, enemy):
@@ -50,11 +24,7 @@ def enemy_attack(player, enemy):
     if enemy.name == "Vampire":
         vampire_special(enemy)
 
-    # Summary
-    if not dead(player):
-        print(f"Your hp is {format_stats(player.hp)}.\n")
-    else:
-        print(f"You have no hp left.\n")
+    player.hp_left()
 
 
 def enemy_damage(enemy):
@@ -82,20 +52,15 @@ def vampire_special(enemy):
         print(f"{format_enemy_name(enemy.name)} healed no hp.")
 
 
-def fight_death_check(player, enemy):
-    if dead(player):
+def fight_death_check(player, enemy, skip_list):
+    if player.dead() or enemy.dead():
+        skip_list.append("exit")
+        move_ans = "exit"
+    if player.dead():
         print(f"You died! Monster(s) killed: {player.monster_killed}\n")
-        return True
-    elif dead(enemy):
+    elif enemy.dead():
         print("You win!\n")
         player.monster_killed += 1
-        return True
-
-
-def cooling_down(player):
-    if player.fury_cd > 0:
-        player.fury_cd -= 1
-    player.skill_used = False
 
 
 def print_inventory(inventory):
@@ -126,6 +91,11 @@ def how_many_items(item_name, inventory):
     return uses
 
 
+def turn_end(player, move_ans):
+    if move_ans in ("attack", "skills"):
+        player.cooldown()
+
+
 def fighting(player, enemy, move_list, inventory):
     skip_list = ["run"]
     fight_question = f"What do you want to do ? {format_ans_lists(move_list)}"
@@ -136,10 +106,10 @@ def fighting(player, enemy, move_list, inventory):
 
     while move_ans not in skip_list:
         if move_ans == "attack":
-            players_attack(player, enemy)
-            if not dead(enemy):
+            player.melee_attack(player, enemy)
+            if not enemy.dead():
                 enemy_attack(player, enemy)
-            if fight_death_check(player, enemy):
+            if player.dead() or enemy.dead():
                 skip_list.append("exit")
                 move_ans = "exit"
             else:
@@ -167,7 +137,7 @@ def fighting(player, enemy, move_list, inventory):
                 for i in range(uses):
                     use_bomb(item_use_ans, enemy, inventory)
 
-            if fight_death_check(player, enemy):
+            if player.dead() or enemy.dead():
                 skip_list.append("exit")
                 move_ans = "exit"
             else:
@@ -180,12 +150,12 @@ def fighting(player, enemy, move_list, inventory):
                 skill_use_ans = input(f"Try again or go{f_back()}."
                                       f"{format_ans_lists(player.skill_list)}\n")
             if skill_use_ans == "Fury":
-                skill_fury(player, enemy)
+                player.fury(player, enemy)
 
             if player.skill_used:
-                if not dead(enemy):
+                if not enemy.dead():
                     enemy_attack(player, enemy)
-                if fight_death_check(player, enemy):
+                if player.dead() or enemy.dead():
                     skip_list.append("exit")
                     move_ans = "exit"
                 else:
@@ -193,8 +163,7 @@ def fighting(player, enemy, move_list, inventory):
             else:
                 move_ans = check_answer(move_list, fight_question)
 
-        if move_ans in ("attack", "skills"):
-            cooling_down(player)
+        turn_end(player, move_ans)
 
     if move_ans == "run":
         print("You ran away!\n")

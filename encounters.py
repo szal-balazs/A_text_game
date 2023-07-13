@@ -17,7 +17,7 @@ def find_skill(player, move_list):
 
 def fighting_round(player, enemy, mob_type, move_list, inventory):
     print(player)
-    generate_enemy(enemy, mob_type, player.diff_lvl)
+    enemy.generate(enemy, mob_type, player.diff_lvl)
     fighting(player, enemy, move_list, inventory)
-    if not dead(player):
+    if not player.dead():
         looting(player, mob_type, inventory, move_list)

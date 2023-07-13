@@ -1,3 +1,4 @@
+import random
 from game_elements import *
 
 
@@ -51,7 +52,6 @@ def generate_bomb():
 
 def use_bomb(bomb_name, enemy, inventory):
     def is_weak():
-
         conditions = {
             "Holy grenade": "Unholy",
             "Life bomb": "Undead",
@@ -62,9 +62,6 @@ def use_bomb(bomb_name, enemy, inventory):
     enemy.hp -= 6 if is_weak() else 3
     print(f"You dealt {6 if is_weak() else 3} damage.")
 
-    if dead(enemy):
-        print(f"{format_enemy_name(enemy.name)} has no hp left.\n")
-    else:
-        print(f"{format_enemy_name(enemy.name)} has {format_stats(enemy.hp)} hp left.\n")
+    enemy.hp_left()
 
     inventory[bomb_name] -= 1
