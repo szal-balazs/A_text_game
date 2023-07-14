@@ -61,6 +61,9 @@ def format_enemy_name(ans):
 def format_items(ans):
     return f"\033[92m{ans}\033[0m"
 
+def format_skills(ans):
+    return f"\033[33m{ans}\033[0m"
+
 
 def f_back():
     return f"\033[92m back\033[0m"

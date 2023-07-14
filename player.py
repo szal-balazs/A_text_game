@@ -2,10 +2,10 @@ from game_elements import *
 
 
 class Character:
-    def __init__(self, name, hp, power):
-        self.name = name
-        self.hp = hp
-        self.power = power
+    def __init__(self):
+        self.name = ""
+        self.hp = 0
+        self.power = 0
 
     def dead(self):
         return self.hp <= 0
@@ -13,8 +13,8 @@ class Character:
 
 class Player(Character):
 
-    def __init__(self, name, hp, power):
-        super().__init__(name, hp, power)
+    def __init__(self):
+        super().__init__()
         self.max_hp = 20
         self.luck = 0
         self.max_luck = 8
@@ -58,27 +58,41 @@ class Player(Character):
         enemy.hp_left()
 
     def fury(self, enemy):
+        name = "Fury"
         if self.fury_cd == 0:
             enemy_hp_before = [enemy.hp]
             enemy.hp = enemy.hp - self.damage() - self.damage()
-            self.skill_used = True
             enemy_hp_after = [enemy.hp]
             fury_dmg = enemy_hp_before[0] - enemy_hp_after[0]
-            print(f"\nYou used Fury.")
+            print(f"\nYou used {format_skills(name)}.")
             print(f"You dealt {fury_dmg} damage.")
             enemy.hp_left()
+            self.skill_used = True
             self.fury_cd = 3
-        elif self.fury_cd > 0:
-            print(f"\nYou can't use this skill for {self.fury_cd} turn(s).\n")
 
-
-    def cooldown(self):
+    def turn_end_cooldown(self):
         if self.fury_cd > 0:
             self.fury_cd -= 1
-        self.skill_used = False
+
+    def reset_cooldown(self):
+        self.fury_cd = 0
 
     def hp_left(self):
         if self.dead():
             print(f"You have no hp left.\n")
         else:
             print(f"Your hp is {format_stats(self.hp)}.\n")
+
+    def can_use_skill(self):
+        cooldowns = {
+            "Fury" : self.fury_cd
+        }
+
+        print(f"Your cooldowns:")
+        for key, value in cooldowns.items():
+            print(f"{format_skills(key)}: {value}")
+        if all(value > 0 for value in cooldowns.values()):
+            print(f"You can't use any skills.\n")
+            return False
+        else:
+            return True

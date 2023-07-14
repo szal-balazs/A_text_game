@@ -4,13 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="319e411d-d0ff-49ba-bb1b-5398e49c8f73" name="Changes" comment="Class update">
-      <change afterPath="$PROJECT_DIR$/inventory.py" afterDir="false" />
+    <list default="true" id="319e411d-d0ff-49ba-bb1b-5398e49c8f73" name="Changes" comment="Class update 2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/encounters.py" beforeDir="false" afterPath="$PROJECT_DIR$/encounters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/enemy.py" beforeDir="false" afterPath="$PROJECT_DIR$/enemy.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fight.py" beforeDir="false" afterPath="$PROJECT_DIR$/fight.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/loot.py" beforeDir="false" afterPath="$PROJECT_DIR$/loot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game_elements.py" beforeDir="false" afterPath="$PROJECT_DIR$/game_elements.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory.py" beforeDir="false" afterPath="$PROJECT_DIR$/inventory.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/player.py" afterDir="false" />
     </list>
@@ -71,9 +70,6 @@
       <module name="textgame" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -92,9 +88,6 @@
       <module name="textgame" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="C:\Users\szalai\PycharmProjects\pythonProject3\venv\Scripts\python.exe" />
       <option name="SDK_NAME" value="Python 3.11 (pythonProject3)" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -229,7 +222,14 @@
       <option name="project" value="LOCAL" />
       <updated>1689269694461</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Class update 2">
+      <created>1689279428294</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1689279428294</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -296,6 +296,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="1" />
     <MESSAGE value="Class update" />
-    <option name="LAST_COMMIT_MESSAGE" value="Class update" />
+    <MESSAGE value="Class update 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Class update 2" />
   </component>
 </project>

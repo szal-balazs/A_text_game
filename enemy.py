@@ -5,8 +5,8 @@ import random
 
 class Enemy(Character):
 
-    def __init__(self, name, hp, power):
-        super().__init__(name, hp, power)
+    def __init__(self):
+        super().__init__()
         self.mob_class = ""
         self.type = ""
         self.spec_att_timer = 0
@@ -66,18 +66,20 @@ class Enemy(Character):
         else:
             player.hp = player.hp - self.power
             self.spec_att_timer += 1
-            if self.name == "Vampire":
-                v_heal = round(random.randint(0, self.power) / 2)
-                self.hp += v_heal
-                if v_heal > 0:
-                    print(f"{format_enemy_name(self.name)} healed {format_stats(v_heal)} hp "
-                          f"and has {format_stats(self.hp)} hp.")
-                else:
-                    print(f"{format_enemy_name(self.name)} healed no hp.")
 
         player_hp_after = player.hp
         damage_dealt = player_hp_before - player_hp_after
 
         print(f"{self.name} dealt {damage_dealt} damage to you.")
+
+        if self.name == "Vampire":
+            v_heal = round(random.randint(0, damage_dealt) / 2)
+            self.hp += v_heal
+            if v_heal > 0:
+                print(f"{format_enemy_name(self.name)} healed {format_stats(v_heal)} hp "
+                      f"and has {format_stats(self.hp)} hp.")
+            else:
+                print(f"{format_enemy_name(self.name)} healed no hp.")
+
 
         player.hp_left()

@@ -4,12 +4,9 @@ from enemy import Enemy
 
 
 def main():
-    name = ""
-    hp = 0
-    power = 0
 
-    player = Player(name, hp, power)
-    enemy1 = Enemy(name, hp, power)
+    player = Player()
+    enemy1 = Enemy()
 
     player.create_name()
     player.create_stats()

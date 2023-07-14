@@ -31,11 +31,6 @@ def how_many_items(item_name, inventory):
     return uses
 
 
-def end_turn(player, move_ans):
-    if move_ans in ("attack", "skills"):
-        player.cooldown()
-
-
 def fighting(player, enemy, inventory):
     print(f"You have been attacked by {format_enemy_name(enemy.name)}.")
     print(enemy)
@@ -49,49 +44,53 @@ def fighting(player, enemy, inventory):
                 player.melee_attack(enemy)
                 if not enemy.dead():
                     enemy.attack(player)
+                player.turn_end_cooldown()
 
             elif move_ans == "items" and "items" in player.moves:
                 print_inventory(inventory)
-                item_use_ans = input(f"\nWhat item do you want to use (or go{f_back()})\n")
-                while item_use_ans not in inventory.keys() and item_use_ans != "back":
+                use_item_ans = input(f"\nWhat item do you want to use (or go{f_back()})\n")
+                while use_item_ans not in inventory.keys() and use_item_ans != "back":
                     print_inventory(inventory)
-                    item_use_ans = input(f"Try again or go{f_back()})\n")
+                    use_item_ans = input(f"Try again or go{f_back()})\n")
 
-                if item_use_ans == "Health potion":
-                    uses = how_many_items(item_use_ans, inventory)
+                if use_item_ans == "Health potion":
+                    uses = how_many_items(use_item_ans, inventory)
                     for i in range(uses):
                         use_health_potion(player, inventory),
-                elif item_use_ans == "Sword":
+                elif use_item_ans == "Sword":
                     use_sword(player, inventory)
-                elif item_use_ans == "Golden apple":
-                    uses = how_many_items(item_use_ans, inventory)
+                elif use_item_ans == "Golden apple":
+                    uses = how_many_items(use_item_ans, inventory)
                     for i in range(uses):
                         use_golden_apple(player, inventory)
-                elif item_use_ans in ["Holy grenade", "Life bomb", "Fire bomb"]:
-                    uses = how_many_items(item_use_ans, inventory)
+                elif use_item_ans in ["Holy grenade", "Life bomb", "Fire bomb"]:
+                    uses = how_many_items(use_item_ans, inventory)
                     for i in range(uses):
-                        use_bomb(item_use_ans, enemy, inventory)
+                        use_bomb(use_item_ans, enemy, inventory)
 
             elif move_ans == "skills" and "skills" in player.moves:
-                skill_use_ans = input(f"\nWhat skill do you want to use (or go{f_back()})? "
-                                      f"{format_ans_lists(player.skill_list)}:\n")
-                while skill_use_ans not in player.skill_list and skill_use_ans != "back":
-                    skill_use_ans = input(f"Try again or go{f_back()}."
-                                          f"{format_ans_lists(player.skill_list)}\n")
-                if skill_use_ans == "Fury":
-                    player.fury(enemy)
+                if player.can_use_skill():
+                    use_skill_ans = input(f"\nWhich skill do you want to use ? (or go{f_back()}) "
+                                          f"{format_ans_lists(player.skill_list)}:\n")
+                    while use_skill_ans not in player.skill_list and use_skill_ans != "back":
+                        use_skill_ans = input(f"Try again or go{f_back()}."
+                                              f"{format_ans_lists(player.skill_list)}\n")
 
-                if player.skill_used:
-                    if not enemy.dead():
-                        enemy.attack(player)
+                    if use_skill_ans == "Fury" and player.fury_cd == 0:
+                        player.fury(enemy)
+                        if not enemy.dead():
+                            enemy.attack(player)
+                    else:
+                        print(f"\nYou can't use this skill for {player.fury_cd} turn(s).\n")
 
-            end_turn(player, move_ans)
+                    if player.skill_used:
+                        player.turn_end_cooldown()
 
         elif move_ans == "run":
             print("You ran away!\n")
             break
 
-    player.fury_cd = 0
+    player.reset_cooldown()
 
     if enemy.dead():
         print(f"You won! You defeated the {format_enemy_name(enemy.name)}.\n")
