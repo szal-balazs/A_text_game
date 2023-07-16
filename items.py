@@ -9,16 +9,33 @@ def get_item(item_name, inventory, move_list):
     inventory[item_name] += 1
 
 
+def how_many_items(item_name, inventory):
+    item_count = range(1, inventory[item_name])
+    uses = 0
+    while uses not in item_count:
+        try:
+            uses = int(input("How many do you want to use ?\n"))
+        except ValueError:
+            print("Please enter a whole number.")
+        else:
+            if uses > inventory[item_name]:
+                print(f"You don't have that many {format_items(item_name)}. ")
+            else:
+                break
+
+    return uses
+
+
 def use_health_potion(player, inventory):
     name = "Health potion"
-    if inventory[name] <= 0:
-        print(f"You have no {format_items(name)}")
-    else:
+    uses = how_many_items(name, inventory)
+    total_heal = 0
+    for i in range(uses):
         inventory[name] -= 1
-        heal = 5
-        heal = min(heal, player.max_hp - player.hp)
-        player.hp += heal
-        print(f"You healed {heal} hp. Your hp is {format_stats(player.hp)} now.\n")
+        total_heal += 5
+    total_heal = min(total_heal, player.max_hp - player.hp)
+    player.hp += total_heal
+    print(f"You healed {total_heal} hp. Your hp is {format_stats(player.hp)} now.\n")
 
 
 def use_sword(player, inventory):
@@ -37,12 +54,11 @@ def use_sword(player, inventory):
 
 def use_golden_apple(player, inventory):
     name = "Golden apple"
-    if inventory[name] <= 0:
-        print(f"You have no {format_items(name)}")
-    else:
+    uses = how_many_items(name, inventory)
+    for i in range(uses):
         inventory[name] -= 1
         player.max_hp += 4
-        print(f"You maximum hp increased with 4. It is now {format_stats(player.max_hp)}.\n")
+    print(f"You maximum hp increased with 4. It is now {format_stats(player.max_hp)}.\n")
 
 
 def generate_bomb():
@@ -59,8 +75,12 @@ def use_bomb(bomb_name, enemy, inventory):
         }
         return enemy.type == conditions.get(bomb_name, False)
 
-    enemy.hp -= 6 if is_weak() else 3
-    print(f"You dealt {6 if is_weak() else 3} damage.")
+    uses = how_many_items(bomb_name, inventory)
+    damage = 0
+    for i in range(uses):
+        damage += 6 if is_weak() else 3
+    enemy.hp -= damage
+    print(f"You dealt {damage} damage.")
 
     enemy.hp_left()
 

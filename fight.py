@@ -14,23 +14,6 @@ def print_inventory(inventory):
         print("Empty")
 
 
-def how_many_items(item_name, inventory):
-    item_count = range(1, inventory[item_name])
-    uses = 0
-    while uses not in item_count:
-        try:
-            uses = int(input("How many do you want to use ?\n"))
-        except ValueError:
-            print("Please enter a whole number.")
-        else:
-            if uses > inventory[item_name]:
-                print(f"You don't have that many {format_items(item_name)}. ")
-            else:
-                break
-
-    return uses
-
-
 def fighting(player, enemy, inventory):
     print(f"You have been attacked by {format_enemy_name(enemy.name)}.")
     print(enemy)
@@ -54,19 +37,13 @@ def fighting(player, enemy, inventory):
                     use_item_ans = input(f"Try again or go{f_back()})\n")
 
                 if use_item_ans == "Health potion":
-                    uses = how_many_items(use_item_ans, inventory)
-                    for i in range(uses):
-                        use_health_potion(player, inventory),
+                    use_health_potion(player, inventory),
                 elif use_item_ans == "Sword":
                     use_sword(player, inventory)
                 elif use_item_ans == "Golden apple":
-                    uses = how_many_items(use_item_ans, inventory)
-                    for i in range(uses):
-                        use_golden_apple(player, inventory)
+                    use_golden_apple(player, inventory)
                 elif use_item_ans in ["Holy grenade", "Life bomb", "Fire bomb"]:
-                    uses = how_many_items(use_item_ans, inventory)
-                    for i in range(uses):
-                        use_bomb(use_item_ans, enemy, inventory)
+                    use_bomb(use_item_ans, enemy, inventory)
 
             elif move_ans == "skills" and "skills" in player.moves:
                 if player.can_use_skill():
